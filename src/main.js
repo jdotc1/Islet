@@ -24,6 +24,7 @@ const volumeHud = require("./volume-hud");
 const { readShelf } = require("./shelf-file");
 const { helperLifecycle } = require("./helper-lifecycle");
 const { audioTarget } = require("./audio-target");
+const { preventExternalNavigation } = require("./window-navigation");
 const { needsWelcome, finishWelcome } = require("./welcome");
 const { loadLinks, saveLinks } = require("./links");
 const phoneDrop = require("./phone-drop");
@@ -102,6 +103,7 @@ function createWindow() {
     skipTaskbar: true, hasShadow: false, focusable: true, show: false,
     webPreferences: { preload: path.join(__dirname, "preload.js") },
   });
+  preventExternalNavigation(win);
   placeWindow();
   win.setAlwaysOnTop(true, "screen-saver");
   win.setVisibleOnAllWorkspaces(true);
@@ -646,6 +648,7 @@ function openSettings() {
     width: 780, height: 620, title: "Islet settings", icon: APP_ICON, backgroundColor: "#0b0b0c", autoHideMenuBar: true,
     webPreferences: { preload: path.join(__dirname, "..", "settings", "preload.js") },
   });
+  preventExternalNavigation(settingsWin);
   settingsWin.loadFile(path.join(__dirname, "..", "settings", "settings.html"));
 }
 const settingsView = () => ({ ...config, hooks: bridge.installed(), login: login(), petName: loadPet(config.customPet)?.name || "" });
@@ -703,6 +706,7 @@ function openWelcome() {
     width: 560, height: 660, title: "Welcome to Islet", icon: APP_ICON, backgroundColor: "#0b0b0c", autoHideMenuBar: true,
     webPreferences: { preload: path.join(__dirname, "..", "settings", "welcome-preload.js") },
   });
+  preventExternalNavigation(welcomeWin);
   welcomeWin.loadFile(path.join(__dirname, "..", "settings", "welcome.html"));
 }
 ipcMain.handle("welcome:load", () => ({
